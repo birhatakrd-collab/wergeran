@@ -16,6 +16,15 @@
 
     <title>وەرگێرانا بادینی - Birhat</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Babel Standalone for in-browser compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Polyfill for process/env to prevent crashes in browser mode on Netlify -->
+    <script>
+      window.process = window.process || { env: {} };
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap" rel="stylesheet">
@@ -34,6 +43,7 @@
       
       *, button, input, textarea, h1, h2, h3, h4, h5, h6, p, span, div, a {
         font-family: 'Rabar_040', 'Noto Sans Arabic', sans-serif !important;
+        background-color: #020617; /* Fallback */
       }
 
       /* Professional Scrollbar */
@@ -179,18 +189,20 @@
 <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+    "react": "https://esm.sh/react@18.2.0",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "@google/genai": "https://esm.sh/@google/genai",
+    "lucide-react": "https://esm.sh/lucide-react?deps=react@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
-</head>
+  </head>
   <body>
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <!-- Updated to use babel for transpilation -->
+    <script type="text/babel" data-type="module" src="/index.tsx" data-presets="react,typescript"></script>
+  </body>
 </html>
