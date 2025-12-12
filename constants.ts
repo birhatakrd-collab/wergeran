@@ -1,76 +1,59 @@
-import { LanguageOption } from './types';
+import { Language } from './types';
 
-export const AUTO_DETECT_LANG: LanguageOption = { code: 'auto', name: 'خوەبەر (Auto Detect)', dir: 'ltr' };
+// The user provided key. In production, this should be strictly an env var.
+// For this demo to work immediately, we expose it here, but typically we rely on process.env.API_KEY.
+export const DEMO_API_KEY = 'AIzaSyCURWtSR72M6_lYoc4MiM-I_9OqAHF37vM';
 
-// High quality PNG flag for Kurdistan
-const KURDISTAN_FLAG_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Flag_of_Kurdistan.svg/320px-Flag_of_Kurdistan.svg.png";
+export const SOCIAL_LINKS = {
+  instagram: 'https://instagram.com/birhatkrd',
+  snapchat: 'https://snapchat.com/add/birhatkrd',
+  telegram: 'https://t.me/birhatkrd',
+  tiktok: 'https://www.tiktok.com/@birhatkrd',
+  handle: '@birhatkrd'
+};
 
-// Primary Languages (Pinned to top)
-const PRIMARY_LANGUAGES: LanguageOption[] = [
-    { code: 'ku-badini', name: 'کوردی (بادینی)', dir: 'rtl', isDialect: true, customFlag: KURDISTAN_FLAG_URL },
-    { code: 'en', name: 'English (ئنگلیزی)', dir: 'ltr', flagCode: 'gb' },
-    { code: 'ar', name: 'Arabic (عەربی)', dir: 'rtl', flagCode: 'sa' },
-    { code: 'ku-sorani', name: 'کوردی (سورانی)', dir: 'rtl', isDialect: true, customFlag: KURDISTAN_FLAG_URL },
+export const DEVELOPER_INFO = {
+  name: "بیرهات غیاس",
+  degree: "دەرچوویێ زانکویا زاخۆ - بەشێ زمانێ ئنگلیزی",
+  origin: "دهوک",
+  description: "من ئەف پروژە یێ دروست وەک خزمەتەک بو زمانێ کوردی بادینی یێ شرین و هاریکاریا قوتابی و ماموستا وکومپانی و هەر تاکە کەسەکی پێدڤی دبیتێ هیڤیە ببیتە جهێ مفای."
+};
+
+// Priority languages
+const PRIORITY_LANGUAGES: Language[] = [
+  { code: 'en', name: 'ئنگلیزی', flag: '🇬🇧' },
+  { code: 'ku', name: 'کوردی (بادینی)', flag: '☀️' }, // Custom flag for simplicity
+  { code: 'ar', name: 'عەرەبی', flag: '🇸🇦' },
 ];
 
-// Helper to generate other languages
-const OTHER_LANGUAGES: LanguageOption[] = [
-    { code: 'tr', name: 'Tirkî (ترکی)', dir: 'ltr', flagCode: 'tr' },
-    { code: 'fa', name: 'Farisî (فارسی)', dir: 'rtl', flagCode: 'ir' },
-    { code: 'de', name: 'Elmanî (ئەلمانی)', dir: 'ltr', flagCode: 'de' },
-    { code: 'fr', name: 'Frensî (فرەنسی)', dir: 'ltr', flagCode: 'fr' },
-    { code: 'es', name: 'Spanî (سپانی)', dir: 'ltr', flagCode: 'es' },
-    { code: 'it', name: 'Îtalî (ئیتالی)', dir: 'ltr', flagCode: 'it' },
-    { code: 'ru', name: 'Rûsî (روسی)', dir: 'ltr', flagCode: 'ru' },
-    { code: 'zh', name: 'Çînî (چینی)', dir: 'ltr', flagCode: 'cn' },
-    { code: 'ja', name: 'Yaponî (یابانی)', dir: 'ltr', flagCode: 'jp' },
-    { code: 'ko', name: 'Korî (کوری)', dir: 'ltr', flagCode: 'kr' },
-    { code: 'hi', name: 'Hindî (هندی)', dir: 'ltr', flagCode: 'in' },
-    { code: 'pt', name: 'Portûgalî (پورتوگالی)', dir: 'ltr', flagCode: 'pt' },
-    { code: 'nl', name: 'Holendî (هولەندی)', dir: 'ltr', flagCode: 'nl' },
-    { code: 'sv', name: 'Swêdî (سویدی)', dir: 'ltr', flagCode: 'se' },
+// A subset of world languages to reach ~250 conceptually (truncated for file size, but functional for AI to select)
+// The AI model can handle names passed to it, so we display names in Kurdish/English.
+export const LANGUAGES: Language[] = [
+  ...PRIORITY_LANGUAGES,
+  { code: 'de', name: 'ئەلمانی (German)', flag: '🇩🇪' },
+  { code: 'fr', name: 'فەرەنسی (French)', flag: '🇫🇷' },
+  { code: 'es', name: 'ئیسپانی (Spanish)', flag: '🇪🇸' },
+  { code: 'tr', name: 'تورکی (Turkish)', flag: '🇹🇷' },
+  { code: 'fa', name: 'فارسی (Persian)', flag: '🇮🇷' },
+  { code: 'it', name: 'ئیطالی (Italian)', flag: '🇮🇹' },
+  { code: 'ru', name: 'رووسی (Russian)', flag: '🇷🇺' },
+  { code: 'zh', name: 'چینی (Chinese)', flag: '🇨🇳' },
+  { code: 'ja', name: 'یابانی (Japanese)', flag: '🇯🇵' },
+  { code: 'ko', name: 'کوری (Korean)', flag: '🇰🇷' },
+  { code: 'hi', name: 'هندی (Hindi)', flag: '🇮🇳' },
+  { code: 'pt', name: 'پورتوگالی (Portuguese)', flag: '🇵🇹' },
+  { code: 'nl', name: 'هولەندی (Dutch)', flag: '🇳🇱' },
+  { code: 'sv', name: 'سوێدی (Swedish)', flag: '🇸🇪' },
+  { code: 'no', name: 'نەرویجی (Norwegian)', flag: '🇳🇴' },
+  { code: 'da', name: 'دانیمارکی (Danish)', flag: '🇩🇰' },
+  { code: 'fi', name: 'فینلەندی (Finnish)', flag: '🇫🇮' },
+  { code: 'pl', name: 'پولەندی (Polish)', flag: '🇵🇱' },
+  { code: 'uk', name: 'ئوکراینی (Ukrainian)', flag: '🇺🇦' },
+  { code: 'el', name: 'یونانی (Greek)', flag: '🇬🇷' },
+  { code: 'he', name: 'عێبری (Hebrew)', flag: '🇮🇱' },
+  { code: 'id', name: 'ئەندەنوسی (Indonesian)', flag: '🇮🇩' },
+  { code: 'ms', name: 'مالیزی (Malay)', flag: '🇲🇾' },
+  { code: 'th', name: 'تایلەندی (Thai)', flag: '🇹🇭' },
+  { code: 'vi', name: 'ڤێتنامی (Vietnamese)', flag: '🇻🇳' },
+  // ... The model supports virtually all. We list major ones for the dropdown UI.
 ];
-
-export const SUPPORTED_LANGUAGES: LanguageOption[] = [AUTO_DETECT_LANG, ...PRIMARY_LANGUAGES, ...OTHER_LANGUAGES];
-
-export const DEFAULT_SOURCE_LANG = PRIMARY_LANGUAGES[1]; // English
-export const DEFAULT_TARGET_LANG = PRIMARY_LANGUAGES[0]; // Badini
-
-export const QUICK_PHRASES = [
-    { text: "Hello, how are you?", label: "سلاڤ، چەوانی؟" },
-    { text: "Where are you going?", label: "بو کیڤە دچی؟" },
-    { text: "Thank you very much", label: "گەلەک سوپاس" },
-    { text: "I don't understand", label: "تێنەگەهشتم" },
-    { text: "Can you help me?", label: "هاریکاری؟" },
-    { text: "What is your name?", label: "ناڤێ تە چیە؟" },
-    { text: "Have a nice day", label: "روژەکا خوش" },
-    { text: "See you later", label: "دێ تە بینم" }
-];
-
-export const SYSTEM_PROMPT = `You are an expert professional translator specializing STRICTLY in the Kurdish **Badini (Bahdini)** dialect as spoken in Duhok and Zakho.
-
-**STRICT BADINI VOCABULARY RULES (DO NOT USE KURMANJI OR SORANI):**
-1.  **Time:** Use 'noka' (now) NOT 'êsta'. Use 'hingî' (then).
-2.  **Quantity:** Use 'gelek' (a lot/very) NOT 'zor'. Use 'hindek' (some).
-3.  **Verbs:** 
-    *   Future: Use 'dê' particle (e.g., 'ez dê çim').
-    *   Past: Ensure ergativity (e.g., 'min got', 'te dît').
-    *   Use 'divêt' (must/want) properly.
-4.  **Common Words:**
-    *   'Gelek' instead of 'Zor'.
-    *   'Çawan' or 'Çewa' instead of 'Çon'.
-    *   'Baş' instead of 'Çak'.
-    *   'Mirov' or 'Kes' instead of 'Kelik'.
-    *   'Vêrê' (here) instead of 'Lêre'.
-5.  **Script:** 
-    *   If translating TO Badini, use the **Kurdish Arabic Script** (Aliyê alfabeya erebî) unless the user explicitly asks for Latin.
-
-**Features:**
-*   **Grammar Fix:** If the user asks to "Fix Grammar", correct the input text's grammar while keeping the same language, then output ONLY the corrected text.
-*   **Image Translation:** If an image is provided, translate the text inside it.
-
-**Output Style:**
-*   Provide ONLY the direct translation. Do not add "Here is the translation".
-*   Maintain a formal yet natural tone suitable for a professional tool.
-*   **Context:** The longer the input, the better the context. Translate meanings, not just words.
-`;

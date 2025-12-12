@@ -1,148 +1,75 @@
 import { GoogleGenAI } from "@google/genai";
-import { SYSTEM_PROMPT } from '../constants.ts';
 
-const getClient = () => {
-    // Attempt to retrieve the API key from multiple sources.
-    let apiKey = '';
-
-    // 1. Check for standard process.env (Netlify Build / Node)
-    // We strictly check typeof process first to avoid browser crashes.
-    if (typeof process !== 'undefined' && process.env) {
-        apiKey = process.env.API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.REACT_APP_GEMINI_API_KEY || '';
-    }
-
-    // 2. Check for Vite's import.meta.env (Client-side bundles)
-    // @ts-ignore
-    if (!apiKey && typeof import.meta !== 'undefined' && import.meta.env) {
-        // @ts-ignore
-        apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || '';
-    }
-
-    // 3. Fallback for manually injected window variables
-    if (!apiKey && typeof window !== 'undefined') {
-        // @ts-ignore
-        apiKey = window.ENV?.API_KEY || '';
-    }
-
-    if (!apiKey) {
-        console.warn("API Key is missing. If you are using Netlify Static Hosting without a build step, the Environment Variable will NOT work. You must use a Build command or hardcode it temporarily.");
-        // Note: For pure static HTML deployment without a build step, 
-        // environment variables are not injected into client-side code automatically.
-    }
-    
-    return new GoogleGenAI({ apiKey: apiKey });
-}
+// Use process.env.API_KEY directly as per @google/genai guidelines
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const translateText = async (
-  text: string, 
-  sourceLangName: string, 
-  targetLangName: string,
-  imageBase64?: string
+  text: string,
+  sourceLang: string,
+  targetLang: string
 ): Promise<string> => {
-  if (!text.trim() && !imageBase64) return "";
-
-  let prompt = `Translate the following text from ${sourceLangName} to ${targetLangName}. 
-  Text to translate:
-  "${text}"
-  `;
-
-  if (sourceLangName.includes('Auto') || sourceLangName === 'auto') {
-     prompt = `Translate the following text to ${targetLangName}. Detect the source language automatically.
-     Text to translate:
-     "${text}"
-     `;
-  }
-
-  // Config for Image content
-  let contents: any = prompt;
-  if (imageBase64) {
-      // Clean base64 string
-      const cleanBase64 = imageBase64.split(',')[1] || imageBase64;
-      
-      contents = {
-        parts: [
-            { inlineData: { mimeType: 'image/jpeg', data: cleanBase64 } },
-            { text: `Analyze this image and translate any text found inside it to ${targetLangName}. If there is no text, describe the image in ${targetLangName}. Return ONLY the translation/description.` }
-        ]
-      };
-  }
+  if (!text || !text.trim()) return "";
 
   try {
-    const ai = getClient();
+    const model = 'gemini-2.5-flash';
+    
+    // Professional System Instruction to teach the model "Badini" (Duhok/Zakho)
+    const systemInstruction = `
+      You are an expert linguistic translator specializing in the "Badini" (Bahdini) dialect of Northern Kurmanji Kurdish, specifically as spoken in the Duhok and Zakho regions.
+
+      STRICT RULES FOR OUTPUT:
+      1. **SCRIPT (ئەلفوبێ)**: When translating to Kurdish (Badini), you must **ONLY** use the Kurdish-Arabic script (ئەلفوبێی کوردی).
+         - **FORBIDDEN**: NEVER use Latin/English letters in the Kurdish output. 
+         - Example: Do NOT write "Tu chaway". YOU MUST WRITE "تو چەوایی".
+         - Even if the input is English, the Kurdish output must be in Arabic script.
+
+      2. **DIALECT (Duhok/Zakho)**:
+         - Use the specific vocabulary and grammar of Duhok and Zakho.
+         - **Verbs**: Use "ئەز دچم" (I go), "من دڤێت" (I want), "ئەز یێ دهێم" (I am coming).
+         - **Vocabulary**: 
+           - Use "باش" (Bash) for Good.
+           - Use "چەوا" (Chewa) or "چەوانی" for How.
+           - Use "هەوە" (Hew) for You (plural/obj).
+           - Use "ڤێرێ" (Vêrê) / "وێرێ" (Wêrê) for Here/There.
+           - Use "مirov" -> "مروڤ" or "کەس" naturally.
+         
+      3. **STYLE**:
+         - The translation must be "Jwan" (Beautiful) and natural.
+         - Avoid literal machine translation; use idioms common in Badinan if appropriate.
+         - Tone: Polite and native.
+
+      4. **NO EXPLANATIONS**: Output ONLY the translated text without notes.
+
+      EXAMPLES (English -> Badini):
+      - "Hello" -> "سڵاڤ"
+      - "How are you?" -> "تو چەوایی؟" or "هوین چەوانن؟"
+      - "I miss you" -> "بیریا تە دکەم" or "من بیریا تە کریە"
+      - "Where are you going?" -> "تو دچەیە کیڤە؟"
+      - "This is great" -> "ئەڤە یا گەلەکا باشە"
+    `;
+
+    const prompt = `
+      Translate the following text ONLY. Do not add any explanations.
+      
+      Source Language: ${sourceLang}
+      Target Language: ${targetLang}
+      
+      Text to translate:
+      "${text}"
+    `;
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash', 
-      contents: contents,
+      model: model,
+      contents: prompt,
       config: {
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction: systemInstruction,
         temperature: 0.3, 
       }
     });
 
-    return response.text || "";
-  } catch (error: any) {
+    return response.text?.trim() || "";
+  } catch (error) {
     console.error("Translation error:", error);
-    // Return a user-friendly error if it's an API key issue
-    if (error.message?.includes('API key')) {
-        return "Error: API Key is invalid or missing. Please check your Netlify configuration or Browser Console.";
-    }
-    throw new Error("Translation failed. Please try again.");
+    return "بورین، ئارێشەک چێبوو د وەرگێرانێ دا. هیڤیە دوبارە بکە."; 
   }
-};
-
-export const fixGrammar = async (text: string, langName: string): Promise<string> => {
-    if (!text.trim()) return "";
-    
-    const prompt = `Fix the grammar and spelling of the following text in ${langName}. Return ONLY the corrected text, no explanations.
-    
-    Text: "${text}"`;
-
-    try {
-        const ai = getClient();
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: {
-            systemInstruction: "You are a helpful grammar assistant.",
-            temperature: 0.1,
-          }
-        });
-    
-        return response.text || text;
-      } catch (error) {
-        return text;
-      }
-}
-
-export const generateSeminar = async (topic: string, pages: string): Promise<string> => {
-    const pageCount = parseInt(pages) || 1;
-    const targetWords = pageCount * 300;
-
-    const prompt = `
-    Write a complete academic seminar/presentation in **Kurdish Badini Dialect** about: "${topic}".
-    
-    **Structure Requirements:**
-    1.  **Sernivîs (Title)**: Creative title.
-    2.  **Pêşgotin (Introduction)**: Introduce the topic clearly.
-    3.  **Naverok (Content)**: Detailed explanation covering approximately ${targetWords} words (enough for ${pageCount} pages). Break into points/paragraphs.
-    4.  **Encam (Conclusion)**: Summary of main points.
-    
-    **Tone:** Formal, Academic, Badini Kurdish (Duhok/Zakho style).
-    **Output:** Only the seminar text. Do not include any english text.
-    `;
-
-    try {
-        const ai = getClient();
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
-            config: {
-                systemInstruction: SYSTEM_PROMPT,
-                temperature: 0.7,
-            }
-        });
-        return response.text || "Borîne، şaşiyek çêbû.";
-    } catch (error) {
-        console.error("Seminar error", error);
-        throw error;
-    }
 };

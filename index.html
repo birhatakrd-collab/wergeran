@@ -1,210 +1,109 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl" class="dark">
+<html lang="ku" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#020617" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Wergêrana Badînî" />
-    
-    <!-- App Logo / Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%230f172a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='300' fill='%23f59e0b' style='filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.5));'%3EB%3C/text%3E%3C/svg%3E" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230f172a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='300' fill='%23f59e0b'%3EB%3C/text%3E%3C/svg%3E" />
-
-    <link rel="manifest" href="/manifest.json" />
-
-    <title>وەرگێرانا بادینی - Birhat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>وەرگێرانا بادینی</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Babel Standalone for in-browser compilation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Polyfill for process/env to prevent crashes in browser mode on Netlify -->
-    <script>
-      window.process = window.process || { env: {} };
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap" rel="stylesheet">
-    <style>
-      /* Simulating Rabar_040 */
-      @font-face {
-        font-family: 'Rabar_040';
-        src: local('Rabar_040'), url('https://fonts.gstatic.com/s/notosansarabic/v18/nwpxtLGrOAZMl5nJ_wfbRsP_K0vV5s76.woff2') format('woff2'); 
-      }
-
-      body {
-        font-family: 'Rabar_040', 'Noto Sans Arabic', sans-serif !important;
-        background-color: #020617;
-        overflow-x: hidden;
-      }
-      
-      *, button, input, textarea, h1, h2, h3, h4, h5, h6, p, span, div, a {
-        font-family: 'Rabar_040', 'Noto Sans Arabic', sans-serif !important;
-        background-color: #020617; /* Fallback */
-      }
-
-      /* Professional Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(245, 158, 11, 0.3); 
-        border-radius: 10px;
-        backdrop-filter: blur(4px);
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(245, 158, 11, 0.6); 
-      }
-
-      .glass-panel {
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
-      }
-
-      .glass-input {
-        background: rgba(2, 6, 23, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        transition: all 0.3s ease;
-      }
-      .glass-input:focus-within {
-        background: rgba(2, 6, 23, 0.7);
-        border-color: rgba(245, 158, 11, 0.3);
-        box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
-      }
-
-      /* Aurora Background Animation */
-      .aurora-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
-        background: radial-gradient(circle at 50% 120%, rgba(2, 6, 23, 1), rgba(2, 6, 23, 1));
-        overflow: hidden;
-      }
-      .aurora-blob {
-        position: absolute;
-        filter: blur(80px);
-        opacity: 0.4;
-        animation: float 10s infinite ease-in-out;
-      }
-      .blob-1 {
-        top: -10%;
-        left: -10%;
-        width: 50vw;
-        height: 50vw;
-        background: rgba(245, 158, 11, 0.15); /* Gold */
-        animation-delay: 0s;
-      }
-      .blob-2 {
-        bottom: -10%;
-        right: -10%;
-        width: 60vw;
-        height: 60vw;
-        background: rgba(59, 130, 246, 0.1); /* Blue */
-        animation-delay: -5s;
-      }
-      .blob-3 {
-        top: 40%;
-        left: 40%;
-        width: 30vw;
-        height: 30vw;
-        background: rgba(168, 85, 247, 0.1); /* Purple */
-        animation-delay: -2s;
-      }
-
-      @keyframes float {
-        0% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(30px, -50px) scale(1.1); }
-        66% { transform: translate(-20px, 20px) scale(0.9); }
-        100% { transform: translate(0, 0) scale(1); }
-      }
-
-      /* Scanning Animation for Image Translation */
-      .scan-line {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(to right, transparent, #f59e0b, transparent);
-        box-shadow: 0 0 10px #f59e0b;
-        animation: scan 2s linear infinite;
-        opacity: 0.8;
-      }
-      @keyframes scan {
-        0% { top: 0%; opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { top: 100%; opacity: 0; }
-      }
-    </style>
     <script>
       tailwind.config = {
-        darkMode: 'class',
         theme: {
           extend: {
-            fontFamily: {
-              sans: ['"Rabar_040"', '"Noto Sans Arabic"', 'sans-serif'],
-            },
             colors: {
               gold: {
-                50: '#fffbeb',
-                100: '#fef3c7',
-                200: '#fde68a',
-                300: '#fcd34d',
-                400: '#fbbf24',
-                500: '#f59e0b', // Base Gold
-                600: '#d97706',
-                700: '#b45309',
-                800: '#92400e',
-                900: '#78350f',
-                950: '#451a03',
+                50: '#fffdf0',
+                100: '#fffba0',
+                200: '#fff660',
+                300: '#ffeb3b',
+                400: '#ffd700', // Brighter Gold
+                500: '#eebb00',
+                600: '#c69200',
+                700: '#9f6b00',
+                800: '#7d5000',
+                900: '#643d00',
+                950: '#3a1e00',
               },
               dark: {
-                800: '#1e293b',
-                900: '#0f172a', 
-                950: '#020617', // Deepest Dark
+                800: '#161616',
+                900: '#0a0a0a',
+                950: '#000000'
               }
             },
+            fontFamily: {
+              kurdish: ['"Vazirmatn"', 'sans-serif'],
+            },
             animation: {
-              'spin-slow': 'spin 3s linear infinite',
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'blob': 'blob 7s infinite',
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
+            },
+            keyframes: {
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
             }
           }
         }
       }
     </script>
-<script type="importmap">
+    <!-- Importing Vazirmatn for a very modern, clean Kurdish look -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Vazirmatn', sans-serif;
+        background-color: #000000;
+        color: #f3f4f6;
+        overflow-x: hidden;
+      }
+      /* Modern Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333; 
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #eebb00; 
+      }
+      
+      .glass-panel {
+        background: rgba(20, 20, 20, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      
+      .gold-gradient-text {
+        background: linear-gradient(135deg, #ffd700 0%, #eebb00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    </style>
+  <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react/": "https://esm.sh/react@18.2.0/",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react-dom": "https://esm.sh/react-dom@18.2.0",
-    "@google/genai": "https://esm.sh/@google/genai",
-    "lucide-react": "https://esm.sh/lucide-react?deps=react@18.2.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0"
   }
 }
 </script>
-  <link rel="stylesheet" href="/index.css">
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
-    <!-- Updated to use babel for transpilation -->
-    <script type="text/babel" data-type="module" src="/index.tsx" data-presets="react,typescript"></script>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>

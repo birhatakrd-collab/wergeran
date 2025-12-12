@@ -1,5 +1,5 @@
 {
-  "name": "birhat---badini-translator",
+  "name": "وەرگێرانا-بادینی",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "18.2.0",
     "react-dom": "^19.2.3",
-    "@google/genai": "latest",
-    "lucide-react": "18.2.0"
+    "react": "^19.2.3",
+    "lucide-react": "^0.560.0",
+    "@google/genai": "^1.33.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
