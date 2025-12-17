@@ -1,7 +1,7 @@
 {
-  "name": "wergerana-badini",
+  "name": "name-display-app",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,12 +11,12 @@
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "framer-motion": "^12.23.26",
     "lucide-react": "^0.561.0"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
-    "vite": "^6.2.0",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
   }
 }
