@@ -1,5 +1,8 @@
 {
-  "name": "Name Display App",
-  "description": "A sleek, responsive React application that dynamically renders your name with modern typography and styling.",
-  "requestFramePermissions": []
+  "name": "وەرگێرانا بادینی Pro",
+  "description": "باشترین و دەقیقترین وەرگێڕێ زمانێ بادینی ب ژیریا دەستکرد.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }
