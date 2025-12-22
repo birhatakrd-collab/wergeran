@@ -502,3 +502,4 @@ if (container) {
     </React.StrictMode>
   );
 }
+const genAI = new GoogleGenAI(import.meta.env.VITE_API_KEY);
