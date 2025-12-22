@@ -29,34 +29,6 @@ import {
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
-// --- API Key Configuration ---
-// Safely retrieve API Key prioritizing VITE_API_KEY for Netlify/Vite environment
-const getApiKey = () => {
-  try {
-    // Check for Vite environment variable (Netlify)
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
-      return import.meta.env.VITE_API_KEY;
-    }
-  } catch (e) {
-    // Ignore if import.meta is not supported
-  }
-  
-  try {
-    // Check for standard process.env (Node/Webpack)
-    // @ts-ignore
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-      // @ts-ignore
-      return process.env.API_KEY;
-    }
-  } catch (e) {
-    // Ignore if process is not defined
-  }
-  
-  return "";
-};
-
-const API_KEY = getApiKey();
-
 // Supported languages list
 const languages = [
   'Auto Detect',
@@ -150,8 +122,15 @@ const App: React.FC = () => {
   const handleTranslate = async () => {
     if (!sourceText.trim() || isTranslating) return;
     setIsTranslating(true);
+    
+    if (!process.env.API_KEY) {
+      setTargetText('بوورە، کلیلا API نەهاتیە ناسین (API Key Missing).');
+      setIsTranslating(false);
+      return;
+    }
+
     try {
-      const ai = new GoogleGenAI({ apiKey: API_KEY });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: `Translate from ${sourceLang} to ${targetLang}. If the target is Badini, use authentic and pure Badini dialect of Kurdish. ONLY provide the translation text, no metadata. Input Text: "${sourceText}"`,
@@ -172,8 +151,14 @@ const App: React.FC = () => {
     setChatInput('');
     setIsChatLoading(true);
 
+    if (!process.env.API_KEY) {
+      setChatMessages(prev => [...prev, { role: 'ai', text: 'بوورە، کلیلا API نەهاتیە ناسین (API Key Missing).' }]);
+      setIsChatLoading(false);
+      return;
+    }
+
     try {
-      const ai = new GoogleGenAI({ apiKey: API_KEY });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: userMsg,
