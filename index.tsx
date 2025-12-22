@@ -29,6 +29,45 @@ import {
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
+// --- API Key Retrieval Logic ---
+const getApiKey = (): string => {
+  // 1. Try GEMINI_API_KEY from import.meta.env (Vite/Netlify)
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.GEMINI_API_KEY) {
+      return import.meta.env.GEMINI_API_KEY;
+    }
+  } catch (e) {}
+
+  // 2. Try GEMINI_API_KEY from process.env (Node/Build)
+  try {
+    // @ts-ignore
+    if (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) {
+      // @ts-ignore
+      return process.env.GEMINI_API_KEY;
+    }
+  } catch (e) {}
+
+  // 3. Fallback to VITE_API_KEY
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
+      return import.meta.env.VITE_API_KEY;
+    }
+  } catch (e) {}
+
+  // 4. Fallback to generic API_KEY
+  try {
+    // @ts-ignore
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      // @ts-ignore
+      return process.env.API_KEY;
+    }
+  } catch (e) {}
+
+  return "";
+};
+
+const API_KEY = getApiKey();
+
 // Supported languages list
 const languages = [
   'Auto Detect',
@@ -123,14 +162,14 @@ const App: React.FC = () => {
     if (!sourceText.trim() || isTranslating) return;
     setIsTranslating(true);
     
-    if (!process.env.API_KEY) {
-      setTargetText('بوورە، کلیلا API نەهاتیە ناسین (API Key Missing).');
+    if (!API_KEY) {
+      setTargetText('بوورە، کلیلا API نەهاتیە ناسین (API Key Missing). ژ هیڤیا تە، د ڕێکخستنێن نێتلیفی دا دڵنیا ببە کو GEMINI_API_KEY یان VITE_API_KEY هاتیە دانان.');
       setIsTranslating(false);
       return;
     }
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: `Translate from ${sourceLang} to ${targetLang}. If the target is Badini, use authentic and pure Badini dialect of Kurdish. ONLY provide the translation text, no metadata. Input Text: "${sourceText}"`,
@@ -151,14 +190,14 @@ const App: React.FC = () => {
     setChatInput('');
     setIsChatLoading(true);
 
-    if (!process.env.API_KEY) {
-      setChatMessages(prev => [...prev, { role: 'ai', text: 'بوورە، کلیلا API نەهاتیە ناسین (API Key Missing).' }]);
+    if (!API_KEY) {
+      setChatMessages(prev => [...prev, { role: 'ai', text: 'بوورە، کلیلا API نەهاتیە ناسین (API Key Missing). ژ هیڤیا تە، د ڕێکخستنێن نێتلیفی دا دڵنیا ببە کو GEMINI_API_KEY یان VITE_API_KEY هاتیە دانان.' }]);
       setIsChatLoading(false);
       return;
     }
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: userMsg,
