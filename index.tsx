@@ -123,6 +123,7 @@ const App: React.FC = () => {
     if (!sourceText.trim() || isTranslating) return;
     setIsTranslating(true);
     try {
+      // Access API_KEY from process.env
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -145,6 +146,7 @@ const App: React.FC = () => {
     setIsChatLoading(true);
 
     try {
+      // Access API_KEY from process.env
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
