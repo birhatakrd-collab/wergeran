@@ -1,2 +1,1 @@
-
-// This file is no longer needed
+// This file has been removed as it is no longer part of the translation app architecture.

@@ -1,2 +1,2 @@
 
-// This file is no longer needed as all logic is in index.tsx
+// This file has been merged into index.tsx
