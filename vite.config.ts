@@ -3,8 +3,8 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
-    // ئەڤ هێڵە کلیلان ژ ژینگێ (Environment) دخوینیت
-    const env = loadEnv(mode, '.', '');
+    // ئەڤە کلیلێ ژ Netlify دخوینیت
+    const env = loadEnv(mode, process.cwd(), '');
     
     return {
       server: {
@@ -13,9 +13,8 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        // ئەڤە ئەو پشکە یا مە گوهۆڕی دا کو کلیلێ ژ Netlify بگریت
+        // ئەڤە کلیلێ دگەهینیتە ناڤ کودی ب ناڤێ API_KEY
         'process.env.API_KEY': JSON.stringify(env.API_KEY || env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.API_KEY || env.GEMINI_API_KEY)
       },
       resolve: {
         alias: {
