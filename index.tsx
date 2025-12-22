@@ -27,6 +27,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 
 const App: React.FC = () => {
+  // Persistence for activation state
   const [isActivated, setIsActivated] = useState<boolean>(() => {
     return localStorage.getItem('isActivated') === 'true';
   });
@@ -50,9 +51,9 @@ const App: React.FC = () => {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize AI - Using standard process.env.API_KEY for Netlify compatibility
-  // Please ensure your Netlify environment variable is named "API_KEY"
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Initialize AI - Using process.env.API_KEY which is standard for Netlify/Vercel
+  // IMPORTANT: Ensure your environment variable in Netlify is named "API_KEY"
+  const getAIInstance = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const languages = [
     "Auto Detect", "کوردی بادینی", "کوردی سورانی", "ئینگلیزی", "عەرەبی", "تورکی", "فارسی", "فەڕەنسی", "ئەلمانی", "ئیسپانی", 
@@ -77,13 +78,15 @@ const App: React.FC = () => {
     if (!sourceText.trim()) return;
     setIsTranslating(true);
     try {
+      const ai = getAIInstance();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: `Translate from ${sourceLang} to ${targetLang}. If the target is Badini, use authentic and pure Badini dialect of Kurdish. Only provide the translation text, nothing else. Text: "${sourceText}"`,
       });
       setTargetText(response.text || 'ئاریشەیەک چێبوو...');
     } catch (error) {
-      setTargetText('بوورە، وەرگێڕان سەرنەگرت.');
+      console.error(error);
+      setTargetText('بوورە، وەرگێڕان سەرنەگرت. کلیلێ API بپشکنە.');
     } finally {
       setIsTranslating(false);
     }
@@ -97,6 +100,7 @@ const App: React.FC = () => {
     setIsChatLoading(true);
 
     try {
+      const ai = getAIInstance();
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: userMsg,
@@ -182,10 +186,12 @@ const App: React.FC = () => {
           </div>
 
           <div className="pt-6 border-t border-white/5">
-            <div className="bg-indigo-500/5 p-3 rounded-2xl border border-indigo-500/10 inline-block px-5">
-              <p className="text-[11px] text-zinc-300 font-black leading-relaxed">
-                تێبینی : وێبسایت بێ بەرامبەرە <br/> 
-                <span className="text-zinc-500 text-[10px] font-bold">لێ هێشتا نە هاتیە بەلافکرن</span>
+            <div className="bg-white/5 p-4 rounded-2xl border border-white/10 inline-block px-6">
+              <p className="text-[12px] text-indigo-400 font-black leading-relaxed">
+                تێبینی : وێبسایت بێ بەرامبەرە
+              </p>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">
+                لێ هێشتا نە هاتیە بەلافکرن
               </p>
             </div>
           </div>
@@ -400,6 +406,7 @@ const App: React.FC = () => {
         )}
       </main>
       
+      {/* Menu Overlay - Sliding from Left */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[100] flex justify-start">
           <div className="absolute inset-0 bg-black/98 backdrop-blur-md" onClick={() => setIsMenuOpen(false)}></div>
