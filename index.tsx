@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
-// Supported languages list
+// لیستا زمانێن پشتەڤانی لێکری
 const languages = [
   'Auto Detect',
   'English',
@@ -82,7 +82,6 @@ const App: React.FC = () => {
     newPin[index] = value.slice(-1);
     setPin(newPin);
 
-    // Auto-focus next
     if (value && index < 3) {
       inputRefs[index + 1].current?.focus();
     }
@@ -99,7 +98,6 @@ const App: React.FC = () => {
     if (finalPin.length < 4) return;
     
     setIsVerifying(true);
-    // Mimic decryption delay
     setTimeout(() => {
       if (finalPin === '1290') {
         setIsActivated(true);
@@ -126,6 +124,7 @@ const App: React.FC = () => {
     if (!sourceText.trim() || isTranslating) return;
     setIsTranslating(true);
     try {
+      // Initialization right before call ensures the most up-to-date key is used
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -147,6 +146,7 @@ const App: React.FC = () => {
     setIsChatLoading(true);
 
     try {
+      // Initialization right before call ensures the most up-to-date key is used
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -178,13 +178,11 @@ const App: React.FC = () => {
   if (!isActivated) {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#030308] relative px-6 overflow-hidden">
-        {/* Abstract Background */}
         <div className="absolute top-[-15%] left-[-15%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[100px] animate-pulse"></div>
         <div className="absolute bottom-[-15%] right-[-15%] w-[50%] h-[50%] bg-pink-600/10 rounded-full blur-[100px] animate-pulse"></div>
         
         <div className="w-full max-w-sm z-10 animate-reveal">
-          <div className="glass rounded-[3.5rem] p-10 border-white/5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] space-y-10 text-center relative overflow-hidden">
-            {/* Header */}
+          <div className="glass rounded-[3.5rem] p-10 border-white/5 shadow-2xl space-y-10 text-center relative overflow-hidden">
             <div className="space-y-4">
               <div className="w-24 h-24 ai-gradient rounded-[2.5rem] mx-auto flex items-center justify-center shadow-2xl floating">
                 <ShieldCheck className="w-12 h-12 text-white" />
@@ -195,7 +193,6 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Warning Message */}
             <div className="bg-amber-500/5 border border-amber-500/10 rounded-3xl p-5 flex gap-4 text-right items-center group hover:bg-amber-500/10 transition-colors" dir="rtl">
               <div className="w-10 h-10 bg-amber-500/20 rounded-2xl flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
@@ -205,7 +202,6 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            {/* PIN Entry */}
             <div className="space-y-6">
               <div className="flex justify-center gap-4" dir="ltr">
                 {pin.map((digit, idx) => (
@@ -235,7 +231,6 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Help Links */}
             <div className="pt-8 border-t border-white/5 space-y-5">
               <p className="text-zinc-600 text-[9px] font-black uppercase tracking-widest">Request Unlock Code</p>
               <div className="flex items-center justify-center gap-5">
@@ -247,16 +242,13 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className="text-center mt-12 text-zinc-800 text-[8px] font-black uppercase tracking-[0.5em] opacity-30">© 2025 Encryption v4.0</p>
         </div>
       </div>
     );
   }
 
-  // --- Main App ---
   return (
     <div className="min-h-screen w-full flex flex-col items-center bg-[#030308] relative overflow-x-hidden pb-10">
-      {/* Background Decor */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] bg-indigo-600/5 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-pink-600/5 rounded-full blur-[120px]"></div>
@@ -267,7 +259,6 @@ const App: React.FC = () => {
           <button onClick={() => setIsMenuOpen(true)} className="w-11 h-11 flex items-center justify-center bg-white/5 rounded-2xl hover:bg-white/10 transition-all border border-white/5 active:scale-90">
             <Menu className="w-5 h-5 text-white" />
           </button>
-
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { setActiveTab('translate'); setShowFullChat(false); }}>
             <div className="flex flex-col text-left">
               <span className="text-lg font-black text-white leading-none">بیرهات <span className="text-indigo-400">AI</span></span>
@@ -301,7 +292,6 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-            
             <div className="flex-1 overflow-y-auto p-6 space-y-7 custom-scrollbar bg-transparent">
               {chatMessages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}>
@@ -319,7 +309,6 @@ const App: React.FC = () => {
               )}
               <div ref={chatEndRef} />
             </div>
-
             <div className="p-6 glass border-t border-white/5 pb-12">
               <div className="max-w-2xl mx-auto flex gap-4">
                 <input 
@@ -368,7 +357,6 @@ const App: React.FC = () => {
                       {languages.slice(1).map(l => <option key={l} value={l} className="bg-[#030308]">{l}</option>)}
                     </select>
                   </div>
-
                   <div className="space-y-5">
                     <textarea 
                       placeholder="نڤێسینا خو ل ڤێرە بنڤێسە..."
@@ -376,27 +364,17 @@ const App: React.FC = () => {
                       onChange={(e) => setSourceText(e.target.value)}
                       className="w-full h-40 bg-white/5 border border-white/10 rounded-[2rem] p-6 text-white text-[16px] focus:outline-none focus:border-indigo-500/30 resize-none shadow-inner transition-all leading-relaxed"
                     />
-
                     <div className="flex justify-center">
-                      <button 
-                        onClick={handleTranslate}
-                        disabled={isTranslating}
-                        className="w-full max-w-[240px] h-16 gold-gradient-solid rounded-3xl flex items-center justify-center gap-4 shadow-[0_20px_40px_-10px_rgba(212,175,55,0.4)] active:scale-95 transition-all border border-white/10 group"
-                      >
+                      <button onClick={handleTranslate} disabled={isTranslating} className="w-full max-w-[240px] h-16 gold-gradient-solid rounded-3xl flex items-center justify-center gap-4 shadow-xl active:scale-95 transition-all border border-white/10 group">
                         {isTranslating ? <Loader2 className="w-6 h-6 text-black animate-spin" /> : <Languages className="w-6 h-6 text-black group-hover:rotate-12 transition-transform" />}
                         <span className="text-black font-black text-xl gold-text-glow">وەرگێڕان</span>
                       </button>
                     </div>
-
                     <div className="w-full min-h-[140px] bg-indigo-500/5 border border-indigo-500/10 rounded-[2rem] p-7 text-white text-[16px] flex items-center justify-center text-center leading-relaxed shadow-inner">
                       {targetText || <span className="text-zinc-700 italic font-bold opacity-30 tracking-wide">وەرگێڕان دێ ل ڤێرە دیار بیت...</span>}
                     </div>
                   </div>
-
-                  <button 
-                    onClick={() => setShowFullChat(true)}
-                    className="w-full glass border-indigo-500/20 p-6 rounded-3xl flex items-center justify-between group transition-all hover:bg-white/5 active:scale-95 shadow-xl"
-                  >
+                  <button onClick={() => setShowFullChat(true)} className="w-full glass border-indigo-500/20 p-6 rounded-3xl flex items-center justify-between group transition-all hover:bg-white/5 active:scale-95 shadow-xl">
                     <div className="flex items-center gap-5">
                       <div className="w-14 h-14 ai-gradient rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform"><Bot className="w-7 h-7 text-white" /></div>
                       <div className="text-right">
@@ -483,7 +461,6 @@ const App: React.FC = () => {
         )}
       </main>
       
-      {/* --- Sidebar --- */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/98 backdrop-blur-xl" onClick={() => setIsMenuOpen(false)}></div>
@@ -496,21 +473,13 @@ const App: React.FC = () => {
                 { id: 'services', label: 'خزمەتگوزاری', icon: Briefcase },
                 { id: 'contact', label: 'پەیوەندی', icon: Phone }
               ].map(item => (
-                <button 
-                  key={item.id}
-                  onClick={() => { setActiveTab(item.id as any); setShowFullChat(false); setIsMenuOpen(false); }}
-                  className={`w-full flex items-center gap-5 p-5 rounded-3xl transition-all ${activeTab === item.id && !showFullChat ? 'ai-gradient text-white shadow-2xl scale-[1.05]' : 'text-zinc-600 hover:text-white hover:bg-white/5'}`}
-                >
+                <button key={item.id} onClick={() => { setActiveTab(item.id as any); setShowFullChat(false); setIsMenuOpen(false); }} className={`w-full flex items-center gap-5 p-5 rounded-3xl transition-all ${activeTab === item.id && !showFullChat ? 'ai-gradient text-white shadow-2xl scale-[1.05]' : 'text-zinc-600 hover:text-white hover:bg-white/5'}`}>
                   <item.icon className="w-6 h-6" />
                   <span className="text-[16px] font-black">{item.label}</span>
                 </button>
               ))}
-              
               <div className="mt-16 pt-10 border-t border-white/5">
-                <button 
-                  onClick={() => { localStorage.removeItem('birhat_ai_activated'); window.location.reload(); }}
-                  className="w-full flex items-center gap-5 p-5 rounded-3xl text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all group"
-                >
+                <button onClick={() => { localStorage.removeItem('birhat_ai_activated'); window.location.reload(); }} className="w-full flex items-center gap-5 p-5 rounded-3xl text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all group">
                   <Lock className="w-6 h-6 group-hover:scale-110 transition-transform" />
                   <span className="text-[12px] font-black uppercase tracking-widest">Logout Session</span>
                 </button>
@@ -523,7 +492,13 @@ const App: React.FC = () => {
   );
 };
 
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  createRoot(rootElement).render(<App />);
+// لێرە کلیل ب شێوەیەکێ پاراستی دهێتە وەرگرتن
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 }
