@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { 
@@ -30,7 +29,7 @@ import {
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
-// لیستا زمانێن پشتەڤانی لێکری
+// Supported languages list
 const languages = [
   'Auto Detect',
   'English',
@@ -124,7 +123,6 @@ const App: React.FC = () => {
     if (!sourceText.trim() || isTranslating) return;
     setIsTranslating(true);
     try {
-      // Initialization right before call ensures the most up-to-date key is used
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -132,7 +130,8 @@ const App: React.FC = () => {
       });
       setTargetText(response.text || 'نەشیام وەرگێڕانێ بکەم.');
     } catch (error) {
-      setTargetText('بوورە، کێشەیەک د سێرڤەری دا هەیە.');
+      console.error(error);
+      setTargetText('بوورە، کێشەیەک د سێرڤەری دا هەیە یان کلیلا API نەهاتیە ناسین.');
     } finally {
       setIsTranslating(false);
     }
@@ -146,7 +145,6 @@ const App: React.FC = () => {
     setIsChatLoading(true);
 
     try {
-      // Initialization right before call ensures the most up-to-date key is used
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -157,6 +155,7 @@ const App: React.FC = () => {
       });
       setChatMessages(prev => [...prev, { role: 'ai', text: response.text || 'ببوورە من تێنگەهشت.' }]);
     } catch (error) {
+      console.error(error);
       setChatMessages(prev => [...prev, { role: 'ai', text: 'ئاریشەک د پەیوەندیێ دا هەیە.' }]);
     } finally {
       setIsChatLoading(false);
@@ -502,4 +501,3 @@ if (container) {
     </React.StrictMode>
   );
 }
-const genAI = new GoogleGenAI(import.meta.env.VITE_API_KEY);
