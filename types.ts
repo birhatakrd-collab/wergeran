@@ -1,15 +1,18 @@
+export enum Direction {
+  RTL = 'rtl',
+  LTR = 'ltr'
+}
+
 export interface Language {
-    code: string;
-    name: string;
-    flag: string; // Emoji flag or code
-    direction: 'rtl' | 'ltr';
+  code: string;
+  name: string;
+  nativeName: string;
+  dir: Direction;
 }
 
 export interface SocialLink {
-    platform: string;
-    username: string;
-    url: string;
-    icon: React.ElementType;
+  platform: string;
+  username: string;
+  url: string;
+  icon: string;
 }
-
-export type TranslationStatus = 'idle' | 'loading' | 'success' | 'error';
