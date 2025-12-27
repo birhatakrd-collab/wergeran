@@ -1,4 +1,6 @@
+
 {
-  "name": "بیرهات AI - وەرگێڕ",
-  "description": "وەرگێڕانا ژیریا دەستکرد ب دیزاینێ رەش و زێر"
+  "name": "Birhat Royal AI Translator",
+  "description": "High-end AI powered Kurdish Badini translator designed for premium experience by Birhat (@birhatkrd).",
+  "requestFramePermissions": []
 }

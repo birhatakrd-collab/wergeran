@@ -1,293 +1,138 @@
+
 import React, { useState } from 'react';
-import { ArrowRightLeft, Copy, X, Sparkles, Zap, Globe, MessageSquare, BookOpen, Cpu, Palette } from 'lucide-react';
-import { LANGUAGES } from './constants';
-import { Language } from './types';
 import { translateText } from './services/geminiService';
-import LanguageSelector from './components/LanguageSelector';
-import Footer from './components/Footer';
-import ChatAssistant from './components/ChatAssistant';
+import { LANGUAGES, SOCIAL_LINKS } from './constants';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'translate' | 'chat'>('translate');
-  
-  const [sourceLang, setSourceLang] = useState<Language>(LANGUAGES[1]); 
-  const [targetLang, setTargetLang] = useState<Language>(LANGUAGES[0]); 
-  
-  const [inputText, setInputText] = useState('');
-  const [outputText, setOutputText] = useState('');
+  const [sourceText, setSourceText] = useState('');
+  const [translatedText, setTranslatedText] = useState('');
+  const [sourceLang, setSourceLang] = useState('auto');
+  const [targetLang, setTargetLang] = useState('ku-BA');
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleTranslate = async () => {
-    if (!inputText.trim()) return;
-
+    if (!sourceText.trim() || isLoading) return;
     setIsLoading(true);
+    setTranslatedText('');
     try {
-      const result = await translateText(inputText, sourceLang.name, targetLang.name);
-      setOutputText(result);
-    } catch (error) {
-      console.error(error);
-      setOutputText('چێ نەبوو، ژ کەرمێ دووبارە هەوڵ بدە.');
+      const result = await translateText(sourceText, sourceLang, targetLang);
+      setTranslatedText(result);
+    } catch (err) {
+      setTranslatedText("Error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const swapLanguages = () => {
-    const temp = sourceLang;
-    setSourceLang(targetLang);
-    setTargetLang(temp);
-    setInputText(outputText);
-    setOutputText(inputText);
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = () => {
+    if (!translatedText) return;
+    navigator.clipboard.writeText(translatedText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden font-['Rabar_041']">
-      
-      {/* Dynamic Background */}
-      <div className="fixed inset-0 z-0 bg-[#030303]">
-        <div className="absolute inset-0 bg-grid opacity-30 animate-pulse"></div>
-        {/* Glow Orbs */}
-        <div className="absolute top-[-20%] left-[20%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8" dir="rtl">
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 blur-[150px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-amber-900/10 blur-[150px] rounded-full"></div>
       </div>
 
-      {/* Header */}
-      <header className="relative z-30 pt-6 pb-2">
-        <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 group cursor-default">
-            <div className="relative">
-              <div className="absolute inset-0 bg-amber-500 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-              <div className="relative w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center text-black shadow-lg">
-                <Zap size={18} fill="currentColor" className="text-black" />
-              </div>
-            </div>
-            <span className="text-xl font-bold tracking-wide text-white group-hover:text-amber-400 transition-colors duration-300">
-              بیرهات <span className="text-amber-500 text-glow">AI</span>
-            </span>
+      <header className="relative z-10 text-center mb-10">
+        <div className="inline-flex items-center gap-4 mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-amber-500/20 rotate-3">
+            <span className="text-slate-950 font-black text-3xl">B</span>
           </div>
-          
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/5 backdrop-blur-md">
-             <Globe size={12} className="text-amber-500/70" />
-             <span className="text-[10px] font-medium text-gray-400 tracking-wider uppercase">وەشانێ ٢.٠</span>
+          <div className="text-right">
+            <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tighter">بیرهات <span className="gold-text">AI</span></h1>
+            <p className="text-amber-500 font-bold text-[10px] uppercase tracking-[0.4em]">Advanced Behdini Engine</p>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="relative z-10 flex-grow flex flex-col items-center justify-start pt-6 pb-4 px-4">
-        
-        <div className="w-full max-w-4xl">
-          
-          {/* Tabs */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-black/40 backdrop-blur-md p-1 rounded-xl border border-white/10 inline-flex gap-1 relative shadow-lg">
-                <button 
-                  onClick={() => setActiveTab('translate')}
-                  className={`
-                    relative px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2
-                    ${activeTab === 'translate' ? 'text-black' : 'text-gray-400 hover:text-white'}
-                  `}
-                >
-                  {activeTab === 'translate' && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-400 rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.4)]"></div>
-                  )}
-                  <span className="relative z-10 flex items-center gap-2">
-                    <ArrowRightLeft size={14} /> وەرگێڕ
-                  </span>
-                </button>
+      <main className="relative z-10 w-full max-w-6xl">
+        <div className="glass rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.5)]">
+          {/* Header/Selectors */}
+          <div className="p-6 bg-white/5 border-b border-white/5 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-grow">
+              <select 
+                value={sourceLang} 
+                onChange={(e) => setSourceLang(e.target.value)}
+                className="bg-slate-900 text-white font-black p-3 rounded-2xl border border-white/10 outline-none focus:border-amber-500/50 transition-all cursor-pointer text-sm"
+              >
+                {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.nativeName}</option>)}
+              </select>
+              
+              <div className="text-amber-500 opacity-50">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
+              </div>
 
-                <button 
-                  onClick={() => setActiveTab('chat')}
-                  className={`
-                    relative px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 flex items-center gap-2
-                    ${activeTab === 'chat' ? 'text-black' : 'text-gray-400 hover:text-white'}
-                  `}
-                >
-                  {activeTab === 'chat' && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)]"></div>
-                  )}
-                  <span className="relative z-10 flex items-center gap-2">
-                     <MessageSquare size={14} /> بیرهات AI
-                  </span>
-                </button>
+              <select 
+                value={targetLang} 
+                onChange={(e) => setTargetLang(e.target.value)}
+                className="bg-slate-900 text-white font-black p-3 rounded-2xl border border-white/10 outline-none focus:border-amber-500/50 transition-all cursor-pointer text-sm"
+              >
+                {LANGUAGES.filter(l => l.code !== 'auto').map(l => <option key={l.code} value={l.code}>{l.nativeName}</option>)}
+              </select>
             </div>
+
+            {isLoading && (
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce"></div>
+                <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+              </div>
+            )}
           </div>
 
-          {activeTab === 'translate' ? (
-            /* TRANSLATOR SECTION */
-            <div className="animate-float">
-              <div className="bg-[#0a0a0a]/60 backdrop-blur-xl rounded-2xl shadow-[0_0_40px_-10px_rgba(0,0,0,0.7)] border border-white/10 overflow-hidden relative">
-                
-                {/* Top Light Line */}
-                <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-50"></div>
-
-                {/* Language Controls */}
-                <div className="bg-black/20 border-b border-white/5 p-3 flex items-center justify-between gap-3">
-                  <div className="flex-1 flex justify-start">
-                     <LanguageSelector selected={sourceLang} onChange={setSourceLang} />
-                  </div>
-
-                  <button 
-                    onClick={swapLanguages}
-                    className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 border border-transparent hover:border-amber-500/30 transition-all duration-300 active:rotate-180"
-                  >
-                    <ArrowRightLeft size={16} />
-                  </button>
-
-                  <div className="flex-1 flex justify-end">
-                     <LanguageSelector selected={targetLang} onChange={setTargetLang} />
-                  </div>
-                </div>
-
-                {/* Translation Area */}
-                <div className="flex flex-col md:flex-row min-h-[320px] relative divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-white/5">
-                  
-                  {/* Input */}
-                  <div className="flex-1 relative group">
-                    <textarea
-                      className={`w-full h-full p-5 text-lg text-gray-200 bg-transparent resize-none focus:outline-none placeholder-gray-600 transition-colors ${sourceLang.dir === 'rtl' ? 'text-right' : 'text-left'}`}
-                      placeholder="ل ڤێرە بنڤیسە..."
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      dir={sourceLang.dir}
-                      spellCheck="false"
-                    />
-                    {inputText && (
-                      <button 
-                        onClick={() => { setInputText(''); setOutputText(''); }}
-                        className="absolute top-3 left-3 p-1 rounded-full text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                    <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                       <span className="text-[10px] text-gray-600 font-mono bg-black/40 px-2 py-0.5 rounded border border-white/5">{inputText.length}</span>
-                    </div>
-                  </div>
-
-                  {/* Output */}
-                  <div className="flex-1 relative bg-black/20">
-                    {isLoading ? (
-                       <div className="w-full h-full flex items-center justify-center flex-col gap-3">
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-amber-500 blur-lg opacity-20 animate-pulse"></div>
-                            <Sparkles className="text-amber-400 animate-spin" size={28} />
-                          </div>
-                          <span className="text-amber-500/70 text-sm font-medium animate-pulse">وەرگێران یا دهێتە کرن ب رێکا ژیریا دەستکرد...</span>
-                       </div>
-                    ) : (
-                      <>
-                        <textarea
-                          readOnly
-                          className={`w-full h-full p-5 text-lg text-amber-50/90 bg-transparent resize-none focus:outline-none ${targetLang.dir === 'rtl' ? 'text-right' : 'text-left'}`}
-                          placeholder="وەرگێڕان..."
-                          value={outputText}
-                          dir={targetLang.dir}
-                        />
-                        {outputText && <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-amber-500/30 to-transparent"></div>}
-                      </>
-                    )}
-                    
-                    <div className="absolute bottom-3 left-3">
-                       <button 
-                        onClick={() => copyToClipboard(outputText)}
-                        disabled={!outputText}
-                        className="p-1.5 text-gray-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-md transition-all disabled:opacity-0"
-                       >
-                         <Copy size={16} />
-                       </button>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Action Area */}
-                <div className="p-3 bg-black/30 border-t border-white/5 flex justify-end">
-                  <button
-                    onClick={handleTranslate}
-                    disabled={isLoading || !inputText.trim()}
-                    className="
-                      group relative overflow-hidden
-                      bg-gradient-to-r from-amber-600 to-amber-500 
-                      disabled:from-gray-800 disabled:to-gray-800 disabled:text-gray-600
-                      text-black font-bold text-sm py-2.5 px-8 rounded-xl 
-                      shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.5)]
-                      transition-all duration-300 transform hover:-translate-y-0.5
-                      flex items-center gap-2
-                    "
-                  >
-                    <span className="relative z-10">وەرگێڕان</span>
-                    {!isLoading && <ArrowRightLeft size={16} className="relative z-10 transition-transform group-hover:rotate-180 duration-500" />}
-                    <div className="absolute inset-0 bg-white/20 blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  </button>
-                </div>
-              </div>
+          {/* Text Areas */}
+          <div className="grid lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x lg:divide-x-reverse divide-white/5">
+            <div className="p-8 sm:p-12 min-h-[350px]">
+              <textarea 
+                className="w-full h-full bg-transparent border-none outline-none resize-none text-2xl sm:text-3xl font-bold text-white placeholder:text-slate-700 custom-scrollbar" 
+                placeholder="تێکستێ خۆ بنویسە..."
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+              />
             </div>
-          ) : (
-            /* CHAT SECTION */
-            <div className="animate-fade-in">
-                <ChatAssistant />
+            <div className="p-8 sm:p-12 min-h-[350px] bg-slate-950/20 relative">
+              <div className={`w-full h-full text-2xl sm:text-3xl font-black leading-relaxed overflow-y-auto custom-scrollbar ${isLoading ? 'opacity-20' : 'opacity-100 text-amber-400'}`}>
+                {translatedText || <span className="text-slate-800 italic">وەرگێران...</span>}
+              </div>
+              
+              {translatedText && (
+                <button 
+                  onClick={handleCopy}
+                  className={`absolute bottom-8 left-8 px-6 py-2 rounded-xl font-black text-xs transition-all ${copied ? 'bg-green-500 text-white' : 'bg-amber-500 text-slate-950 hover:scale-105'}`}
+                >
+                  {copied ? 'کۆپی بوو' : 'کۆپی'}
+                </button>
+              )}
             </div>
-          )}
-
-          {/* New Feature Boxes Section - Replaces Info Footer */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-[#0a0a0a]/40 backdrop-blur-md border border-white/5 p-5 rounded-2xl hover:bg-white/5 transition-all duration-300 group hover:border-amber-500/20">
-                  <div className="flex items-start gap-4">
-                      <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500 group-hover:scale-110 transition-transform duration-300">
-                          <BookOpen size={24} />
-                      </div>
-                      <div>
-                          <h3 className="text-lg font-bold text-gray-200 mb-1">زمانێ کوردی</h3>
-                          <p className="text-sm text-gray-400 leading-relaxed">زمانێ کوردی ناسنامە و دیرۆکا مە یە، پاراستنا وێ ئەرکێ مە هەمیانە دا کو زیندی و پاراستی بمینیت.</p>
-                      </div>
-                  </div>
-              </div>
-
-              <div className="bg-[#0a0a0a]/40 backdrop-blur-md border border-white/5 p-5 rounded-2xl hover:bg-white/5 transition-all duration-300 group hover:border-blue-500/20">
-                  <div className="flex items-start gap-4">
-                      <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500 group-hover:scale-110 transition-transform duration-300">
-                          <Cpu size={24} />
-                      </div>
-                      <div>
-                          <h3 className="text-lg font-bold text-gray-200 mb-1">ژیریا دەستکرد</h3>
-                          <p className="text-sm text-gray-400 leading-relaxed">بکارهئینانا تەکنەلۆجیایا سەردەم (AI) بۆ پێشخستن و بەڵاڤکرنا زمانێ پیرۆزێ کوردی ل جیهانێ.</p>
-                      </div>
-                  </div>
-              </div>
-
-              <div className="bg-[#0a0a0a]/40 backdrop-blur-md border border-white/5 p-5 rounded-2xl hover:bg-white/5 transition-all duration-300 group hover:border-purple-500/20">
-                  <div className="flex items-start gap-4">
-                      <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500 group-hover:scale-110 transition-transform duration-300">
-                          <Palette size={24} />
-                      </div>
-                      <div>
-                          <h3 className="text-lg font-bold text-gray-200 mb-1">دیزاینێ تایبەت</h3>
-                          <p className="text-sm text-gray-400 leading-relaxed">دیزاینەکێ مودێرن و ب سانا بۆ بکارئینەران، داکو ب خۆشی و بێ ئاریشە مفای ژ خزمەتگوزاریان وەربگرن.</p>
-                      </div>
-                  </div>
-              </div>
-
-              <div className="bg-[#0a0a0a]/40 backdrop-blur-md border border-white/5 p-5 rounded-2xl hover:bg-white/5 transition-all duration-300 group hover:border-green-500/20">
-                  <div className="flex items-start gap-4">
-                      <div className="p-3 bg-green-500/10 rounded-xl text-green-500 group-hover:scale-110 transition-transform duration-300">
-                          <Zap size={24} />
-                      </div>
-                      <div>
-                          <h3 className="text-lg font-bold text-gray-200 mb-1">بیرهات AI</h3>
-                          <p className="text-sm text-gray-400 leading-relaxed">وەرگێڕانەکا ب لەز و دروست ب پشتەڤانیا مۆدێلێن هەرە ب هێز یێن جیهانێ بۆ خزمەتا وە.</p>
-                      </div>
-                  </div>
-              </div>
           </div>
+        </div>
 
+        <div className="mt-12 flex justify-center">
+          <button 
+            onClick={handleTranslate}
+            disabled={isLoading || !sourceText.trim()}
+            className="px-20 py-6 bg-amber-500 text-slate-950 font-black text-xl rounded-2xl shadow-2xl shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+          >
+            {isLoading ? 'چاڤەڕێ بە...' : 'وەرگێران'}
+          </button>
         </div>
       </main>
 
-      <Footer />
+      <footer className="mt-20 text-center relative z-10">
+        <div className="flex gap-6 justify-center mb-6">
+          {Object.entries(SOCIAL_LINKS).map(([name, url]) => (
+            <a key={name} href={url} target="_blank" className="text-slate-600 hover:text-amber-500 transition-colors text-xs font-black uppercase tracking-widest">{name}</a>
+          ))}
+        </div>
+        <p className="text-slate-700 text-[9px] font-black uppercase tracking-[0.5em]">Developed by @birhatkrd</p>
+      </footer>
     </div>
   );
 };
